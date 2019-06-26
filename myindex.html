@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      #stopwatch {
+        background: #ddd;
+        border: 1px solid #999;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 250px;
+      }
+      #stopwatch_timer {
+        font-size: 48px;
+        font-weight: bold;
+        text-align: left;
+      }
+      #reset, #switch {
+        width: 15%;
+        box-sizing: padding-box;
+        padding: 10px;
+        display: inline-block;
+        background: #aa2f2f;
+        border: 0;
+        color: #fff;
+      }
+
+    </style>
+    <title>
+      Stopwatch timer
+    </title>
+    <!-- <script src="timer.js"></script> -->
+  </head>
+  <body>
+    <div id="timer">
+      <div id="stopwatch_timer">00:00:00</div>
+      <input type="button" value="Reset" id="reset" disabled/>
+      <input type="button" value="Start" id="switch" disabled/>
+    </div>
+
+    <div>
+      <p>Current time is </p>
+      <p id="timeis"></p>
+    </div>
+
+<script type="text/javascript">
+  var stopwatchtimer = {
+  /* [INIT] */
+  timeStore : null, // holds HTML time display
+  resettimer : null, // holds HTML reset button
+  switch : null, // holds HTML start/stop button
+  timer : null, // timer object
+  currentTime : 0, // current timer
+  init : function () {
+    // Get HTML elements
+    stopwatchtimer.timeStore = document.getElementById("stopwatch_timer");
+    stopwatchtimer.resettimer = document.getElementById("reset");
+    stopwatchtimer.switch = document.getElementById("switch");
+
+    // Attach listeners
+    stopwatchtimer.resettimer.addEventListener("click", stopwatchtimer.reset);
+    stopwatchtimer.resettimer.disabled = false;
+    stopwatchtimer.switch.addEventListener("click", stopwatchtimer.start);
+    stopwatchtimer.switch.disabled = false;
+  },
+
+  /* [ACTIONS] */
+  tick : function () {
+  // tick() : update display if stopwatch running
+
+    // Calculate hours, mins, seconds
+    stopwatchtimer.currentTime++;
+    var remain = stopwatchtimer.currentTime;
+    var hours = Math.floor(remain / 3600);
+    remain -= hours * 3600;
+    var mins = Math.floor(remain / 60);
+    remain -= mins * 60;
+    var secs = remain;
+
+    // Update the display timer
+    if (hours<10) { hours = "0" + hours; }
+    if (mins<10) { mins = "0" + mins; }
+    if (secs<10) { secs = "0" + secs; }
+    stopwatchtimer.timeStore.innerHTML = hours + ":" + mins + ":" + secs;
+  },
+
+  start : function () {
+  // start() : start the stopwatch
+
+    stopwatchtimer.timer = setInterval(stopwatchtimer.tick, 1000);
+    stopwatchtimer.switch.value = "Stop";
+    stopwatchtimer.switch.removeEventListener("click", stopwatchtimer.start);
+    stopwatchtimer.switch.addEventListener("click", stopwatchtimer.stop);
+  },
+
+  stop  : function () {
+  // stop() : stop the stopwatch
+
+    clearInterval(stopwatchtimer.timer);
+    stopwatchtimer.timer = null;
+    stopwatchtimer.switch.value = "Start";
+    stopwatchtimer.switch.removeEventListener("click", stopwatchtimer.stop);
+    stopwatchtimer.switch.addEventListener("click", stopwatchtimer.start);
+  },
+
+  reset : function () {
+  // reset() : reset the stopwatch
+
+    // Stop if running
+    if (stopwatchtimer.timer != null) { stopwatchtimer.stop(); }
+
+    // Reset time
+    stopwatchtimer.currentTime = -1;
+    stopwatchtimer.tick();
+  }
+};
+var date = new Date();
+document.getElementById("timeis").innerHTML = date.toLocaleTimeString();
+window.addEventListener("load", stopwatchtimer.init);
+</script>
+
+  </body>
+</html>
